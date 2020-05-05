@@ -252,14 +252,29 @@ def addsmallNDCG(alpha,beta,R):
 		for i in range(tmp_N):
 			#cnt_+=1
 			_,t = QI[i]
-
+			'''
 			if t in RI:
 				QI1.append(1)
 				cnt += 1
 			else:
 				QI1.append(0)
 				QI2.append(t)	
-		
+			'''
+
+			flag_tmp=0
+			for k in range(len(RI)):			
+				if RI[k][0][0]==t[0][0]+1 and RI[k][0][1]==t[0][1] and RI[k][0][2]==t[0][2]+1 \
+					and computeIoU(RI[k][1][0],t[1][0])>=0.5\
+					and computeIoU(RI[k][1][1],t[1][1])>=0.5:
+					flag_tmp=1
+					break
+			if flag_tmp==1:
+				QI1.append(1)
+				cnt += 1
+			else:
+				QI1.append(0)
+				QI2.append(t)
+
 		if len(RI)>tmp_N:
 			IDCG = [1]*tmp_N
 		else:
@@ -416,11 +431,26 @@ def fitnessNDCG(p):
 
 		for i in range(tmp_N):
 			_,t = QI[i]
-
+			'''
+			#predcls
 			if t in RI:
 				QI1.append(1)
 				cnt += 1
 				print(cnt)
+			else:
+				QI1.append(0)
+			'''
+			#sgdet
+			flag_tmp=0
+			for k in range(len(RI)):			
+				if RI[k][0][0]==t[0][0]+1 and RI[k][0][1]==t[0][1] and RI[k][0][2]==t[0][2]+1 \
+					and computeIoU(RI[k][1][0],t[1][0])>=0.5\
+					and computeIoU(RI[k][1][1],t[1][1])>=0.5:
+					flag_tmp=1
+					break
+			if flag_tmp==1:
+				QI1.append(1)
+				cnt += 1
 			else:
 				QI1.append(0)
 
@@ -454,7 +484,6 @@ def fitnessNDCG(p):
 		else:
 			ndcgI = calDCG(QI1)/calDCG(IDCG)
 		sum_ndcg += ndcgI
-
 		
 	w=0.5
 	sum_ndcg -= w*(alpha**2 + beta**2) #max sum_ndcg
@@ -534,7 +563,7 @@ def trainabGA(model_name,dataset_name,iter_num):
 		
 		#ga = GA(func=fitness, n_dim=2, size_pop=50, max_iter=50, \
 		#	lb=low, ub=high, precision=1e-7)
-		ga = GA(func=fitnessNDCG, n_dim=2, size_pop=100, max_iter=50, \
+		ga = GA(func=fitnessNDCG, n_dim=2, size_pop=100, max_iter=100, \
 			lb=low, ub=high, precision=1e-7)
 
 	
