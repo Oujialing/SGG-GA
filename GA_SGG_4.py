@@ -674,11 +674,14 @@ def trainabListWise(model_name,dataset_name,iter_num):
 	learning_rate = 0.01
 	optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss)
 
-
+	best=[0.0,0.0]
 	with tf.Session() as sess:
+		min_los=1000000
 		for i in range(iter_num):
-			_,loss,alpha,beta = sess.run([optimizer,loss,a,b], feed_dict={Tsm:sm, Tsf:sf, Tshdt:shdt,gts:QQ})
-			print(alpha,beta)
+			_,lossa,alpha,beta = sess.run([optimizer,loss,a,b], feed_dict={Tsm:sm, Tsf:sf, Tshdt:shdt,gts:QQ})
+			print(lossa,alpha,beta)
+			if min_los>lossa:
+				best_x = [alpha,beta]
 
 	return best_x
 
